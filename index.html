@@ -73,6 +73,14 @@
             width: 280px;
             height: auto;
         }
+        .imagediagram {
+            width: 600px;
+            height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+        }
         .centered {
             text-align: center;
         }
@@ -423,7 +431,15 @@ const barTable = [
         let spacing2 = 16 * barD;
         let spacing3 = parseFloat(document.getElementById('dimension').value);
 
-        let S = Math.min(spacing1, spacing2, spacing3);
+        let Space = Math.min(spacing1, spacing2, spacing3);
+
+        const x = dimension;
+        const b = barSel;
+        const t = `${barTSel} @ ${Space.toFixed(0)}"`;
+        const db = barD;
+        const dbr = barTD;
+        const a = x - (2 * 1.5) - (2 * db) - (2 * dbr);  
+        const S = Space.toFixed(0);
 
         output += `Using a Tie Confinement System<br>`;
         output += `Tie Spacing is every ${S.toFixed(0)} inches<br><br>`;
@@ -431,18 +447,30 @@ const barTable = [
         // --- Display image based on number of bars ---
         let imageURL = "";
         if (barQ === 4) {
-            imageURL = "https://example.com/4bars.png";
+            imageURL = "https://raw.githubusercontent.com/obracewell/RCColumnDesignCalculator-Square/refs/heads/main/assets/4barsquare.png";
         } else if (barQ === 6) {
-            imageURL = "https://example.com/6bars.png";
+            imageURL = "https://raw.githubusercontent.com/obracewell/RCColumnDesignCalculator-Square/refs/heads/main/assets/6barsquare.png";
         } else if (barQ === 8) {
-            imageURL = "https://example.com/8bars.png";
+            imageURL = "https://raw.githubusercontent.com/obracewell/RCColumnDesignCalculator-Square/refs/heads/main/assets/8barsquare.png";
         }
 
     if (imageURL !== "") {
-        output += `<img src="${imageURL}" alt="${barQ} bars tie diagram" class="centered-img" style="width: 280px; margin-top: 10px;"><br>`;
+        output += `<img src="${imageURL}" alt="${barQ} bars tie diagram" class="cimagediagram"><br>`;
     } else {
         output += `<span class="error">No image available for ${barQ} bars.</span><br>`;
     }
+
+        output += `
+            <ul style="margin-top: 10px;">
+            <li><strong>x</strong> = ${x} in</li>
+            <li><strong>b</strong> = #${b}</li>
+            <li><strong>t</strong> = #${t}</li>
+            <li><strong>d<sub>b</sub></strong> = ${db} in</li>
+            <li><strong>d<sub>br</sub></strong> = ${dbr} in</li>
+            <li><strong>a</strong> = ${a.toFixed(2)} in</li>
+            <li><strong>S</strong> = ${Space.toFixed(0)} in</li>
+        </ul>
+        `;
 
         output = `<div style="margin-top: 15px;">${output}</div>`;
         document.getElementById('output').innerHTML += output;
