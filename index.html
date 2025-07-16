@@ -428,7 +428,7 @@ const barTable = [
         const dimension = parseFloat(document.getElementById('dimension').value);
 
         //determine actual rho
-        const rho = (parseFloat(savedAst) / parseFloast(savedAg)) *100;
+        const rho = (parseFloat(savedAst) / parseFloat(savedAg)) *100;
         const phiPn = (phi * alpha * ((0.85 * fc * (savedAg - savedAst)) + (fy * savedAst)))/ 1000;
 
         
@@ -461,7 +461,7 @@ const barTable = [
         output += `<strong>Final Design:</strong><br><br>`;
         output += `
             <p>Steel Ratio, ρ: ${rho.toFixed(2)}%</p>
-            <p>Axial Capacity, &Phi;P<sub>n</sub>: ${phiPn_kips.toFixed(2)} k</p>
+            <p>Axial Capacity, &Phi;P<sub>n</sub>: ${phiPn.toFixed(2)} k</p>
             `;
 
 
