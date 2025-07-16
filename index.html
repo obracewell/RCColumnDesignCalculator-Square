@@ -74,11 +74,9 @@
             height: auto;
         }
         .imagediagram {
-            width: 600px;
+            width: 550px;
             height: auto;
             display: block;
-            margin-left: auto;
-            margin-right: auto;
             margin-top: 10px;
         }
         .diagram-wrapper {
@@ -459,10 +457,8 @@ const barTable = [
         const S = Space.toFixed(0);
 
         output += `<strong>Final Design:</strong><br><br>`;
-        output += `
-            <p>Steel Ratio, ρ: ${rho.toFixed(2)}%</p>
-            <p>Axial Capacity, &Phi;P<sub>n</sub>: ${phiPn.toFixed(2)} k</p>
-            `;
+        output += `Steel Ratio, ρ: ${rho.toFixed(2)}%<br>`;
+        output += `Axial Capacity, &Phi;P<sub>n</sub>: ${phiPn.toFixed(2)} k<br>`;
 
 
         // --- Display image based on number of bars ---
