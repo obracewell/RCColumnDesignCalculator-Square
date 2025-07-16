@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RC Column Design Calculator</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <style>
+        .site-header {
+            background-color: #003366;
+            color: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+        }
+        .image-button {
+            display: inline-block;
+            padding: 2px;
+            border-radius: 8px;
+            background-color: white;
+            transition:background-color 0.2s;
+            text-decoration: none;
+        }
+        .button-image {
+            height: 45px;
+            width: 45px;
+            object-fit: contain;
+            vertical-align: middle;
+            border-radius: 8px;
+        }
+        .image-button:hover {
+            background-color: #e0e0e0;
+        }
+        .site-footer {
+            background-color: #f3a26d;
+            color: white;
+            text-align: center;
+            padding: 10px 10px;
+            margin-top: 80px;
+            font-size: 14px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+        select {
+            margin-bottom: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: black;
+            font-weight: bold;
+        }
+        .image {
+            width: 280px;
+            height: auto;
+        }
+        .centered {
+            text-align: center;
+        }
+        .centered-img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        input:disabled {
+            background-color: #e0e0e0;
+        }
+        .page-content {
+            padding: 0px 60px;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+           border: 1px solid #333;
+           padding: 5px 10px;
+        text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <div>
+              <h1>REINFORCED CONCRETE CALCULATOR</h1>
+          </div>
+            <a href="https://obracewell.github.io/RCBeamCalculator/" class="image-button">
+                <img src="https://raw.githubusercontent.com/obracewell/RCBeamAnalysisCalculator-SRB/refs/heads/main/assets/homebutton.png" alt="Button Icon" class="button-image"></a>
+          </div>
+    </header>
+
+<div class="page-content">
+    <h1 class="centered">Design: Square Column</h1>
+
+    <img src="https://github.com/obracewell/RCanalysiscalculator/blob/main/assets/SRBlabeled.png?raw=true" 
+        alt="SquareColumnDiagram" 
+        class="image centered-img" />
+    
+    <p class="success">Input the following values:</p>
+    
+    <label for="fc">Compressive stress of concrete, f'<sub>c</sub> (psi): </label>
+    <select id="fc">
+        <option value="">Select</option>
+        <option value="3000">3000</option>
+        <option value="4000">4000</option>
+    </select>
+    <br>
+
+    <label for="fy">Yield stress of steel, f<sub>y</sub> (psi): </label>
+    <select id="fy">
+        <option value="">Select</option>
+        <option value="40000">40000</option>
+        <option value="50000">50000</option>
+        <option value="60000">60000</option>
+    </select>
+    <br>
+
+    <label>Factored load, P<sub>u</sub>:</label><br>
+    <div style="margin-left: 30px;">
+        <label for="Pu">Direct input, P<sub>u</sub> (k) = </label>
+        <input type="number" id="Pu" oninput="toggleLoadInputs()"><br>
+        <p>OR calculate from live and dead loads, P<sub>u</sub> = 1.2(P<sub>D</sub>) + 1.6(P<sub>L</sub>) </p>
+        <label for="Pd">Dead Load, P<sub>D</sub> (k) = </label>
+        <input type="number" id="Pd" oninput="toggleLoadInputs()"><br>
+        <label for="Pl">Live Load, P<sub>L</sub>= </label>
+        <input type="number" id="Pl" oninput="toggleLoadInputs()"><br>
+    </div>
+
+    <label for="rhoi">Target steel reinforcing ratio, &#961 (%): </label>
+    <select id="rhoi">
+        <option value="">Select</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+    </select>
+    <br>
+
+    <button onclick="performAgSelect()">Calculate</button>
+
+    <div id="output" class="output"></div>
+
+    <div id="columnOptions" style="display:none; margin-top: 10px;">
+    <p id="optionDescriptions"></p>
+
+    <label for="agChoice"><strong>Choose Ag to use:</strong></label>
+    <select id="agChoice" onchange="handleAgSelection()">
+        <option value="">Select one</option>
+    </select>
+</div>
+
+<button id="continueBtn" onclick="continueCalculation()" style="display:none; margin-top: 10px;">
+    Continue Calculation
+</button>
+
+<div id = "steelResults" class="output" style="margin-top: 15px;"></div>
+   
+</div>
+    
+    <script>
+
+const barTable = [
+          { barQuant: 4, barSelection: 4, barDia: 0.5, area: 0.78 },
+          { barQuant: 6, barSelection: 4, barDia: 0.5, area: 1.18 },
+          { barQuant: 8, barSelection: 4, barDia: 0.5, area: 1.57},
+          { barQuant: 4, barSelection: 5, barDia: 0.625, area: 1.23},
+          { barQuant: 6, barSelection: 5, barDia: 0.625, area: 1.84 },
+          { barQuant: 8, barSelection: 5, barDia: 0.625, area: 2.45 },
+          { barQuant: 4, barSelection: 6, barDia: 0.75, area: 1.77 },
+          { barQuant: 6, barSelection: 6, barDia: 0.75, area: 2.65 },
+          { barQuant: 8, barSelection: 6, barDia: 0.75, area: 3.53 },
+          { barQuant: 4, barSelection: 7, barDia: 0.875, area: 2.41 },
+          { barQuant: 6, barSelection: 7, barDia: 0.875, area: 3.61 },
+          { barQuant: 8, barSelection: 7, barDia: 0.875, area: 4.81 },
+          { barQuant: 4, barSelection: 8, barDia: 1.0, area: 3.14 },
+          { barQuant: 6, barSelection: 8, barDia: 1.0, area: 4.71 },
+          { barQuant: 8, barSelection: 8, barDia: 1.0, area: 6.28 },
+          { barQuant: 4, barSelection: 9, barDia: 1.128, area: 4.00 },
+          { barQuant: 6, barSelection: 9, barDia: 1.128, area: 6.00 },
+          { barQuant: 8, barSelection: 9, barDia: 1.128, area: 8.00 },
+          { barQuant: 4, barSelection: 10, barDia: 1.270, area: 5.06 },
+          { barQuant: 6, barSelection: 10, barDia: 1.270, area: 7.59 },
+          { barQuant: 8, barSelection: 10, barDia: 1.270, area: 10.12 },
+          { barQuant: 4, barSelection: 11, barDia: 1.410, area: 6.25 },
+          { barQuant: 6, barSelection: 11, barDia: 1.410, area: 9.37 },
+          { barQuant: 8, barSelection: 11, barDia: 1.410, area: 12.50 },
+          { barQuant: 4, barSelection: 14, barDia: 1.693, area: 9.00 },
+          { barQuant: 6, barSelection: 14, barDia: 1.693, area: 13.50 },
+          { barQuant: 8, barSelection: 14, barDia: 1.693, area: 18.00 },
+          { barQuant: 4, barSelection: 18, barDia: 2.257, area: 16.00 },
+          { barQuant: 6, barSelection: 18, barDia: 2.257, area: 24.00 },
+          { barQuant: 8, barSelection: 18, barDia: 2.257, area: 32.00 },
+        ];
+        
+        function toggleLoadInputs() {
+            const Pu = document.getElementById('Pu');
+            const Pd = document.getElementById('Pd');
+            const Pl = document.getElementById('Pl');
+
+        if (Pu.value) {
+          Pd.disabled = true;
+          Pl.disabled = true;
+        } else if (Pd.value || Pl.value) {
+          Pu.disabled = true;
+        } else {
+          Pu.disabled = false;
+          Pd.disabled = false;
+          Pl.disabled = false;
+        }
+        }
+
+        function getPuValue() {
+            const PuInput = document.getElementById('Pu');
+            const PdInput = document.getElementById('Pd');
+            const PlInput = document.getElementById('Pl');
+
+            const Pd = parseFloat(PdInput.value);
+            const Pl = parseFloat(PlInput.value);
+
+            const Pu = parseFloat(PuInput.value);
+            if (!isNaN(Pu)) {
+                return Pu;
+            }
+            if (!isNaN(Pd) || !isNaN(Pl)) {
+              const dead = isNaN(Pd) ? 0 : Pd;
+              const live = isNaN(Pl) ? 0 : Pl;
+              return 1.2 * dead + 1.6 * live;
+            } 
+            
+            return NaN;
+          }
+        
+        function performAgSelect() {
+            // Get input values
+            const fc = parseFloat(document.getElementById('fc').value);
+            const fy = parseFloat(document.getElementById('fy').value);
+            const Pu = getPuValue();
+            const rhoi = parseFloat(document.getElementById('rhoi').value) / 100;
+            const phi = 0.65; //strength reduction factor
+            const alpha = 0.8; //column interaction coefficient
+            
+            // Validate inputs
+            if (isNaN(fc) || isNaN(fy) || isNaN(Pu) || isNaN(rhoi)) {
+                alert("Please enter all values.");
+                return;
+            }
+
+            let output = `<p class="success">Design:</p><br><br>`;
+            
+            //Calculate Agreq
+            const Agreq = (Pu*1000) / (phi*alpha*(0.85*fc*(1-rhoi) + fy*rhoi));
+                        
+            //Calculate and show Ag options
+            const side = Math.sqrt(Agreq);
+            const sideSmall = Math.floor(side/2) * 2;
+            const sideLarge = sideSmall + 2;
+
+            const AgSmall = sideSmall * sideSmall;
+            const AgLarge = sideLarge * sideLarge;
+
+            output += `A<sub>g,req</sub> = ${Agreq.toFixed(2)} in<br><br>`;
+            output += `Choose A<sub>g</sub>:<br>`;
+            output += `Round Down: ${sideSmall} in × ${sideSmall} in, A<sub>g</sub> = ${AgSmall} in²<br>`;
+            output += `Round Up: ${sideLarge} in × ${sideLarge} in, A<sub>g</sub> = ${AgLarge} in²<br>`;
+
+            output += `
+              <p style="margin-top: 20px;">Choose an option and Continue Design</p>
+              <label for="dimension"> Length/Width of Column (in): </label>
+              <input type="number" id="dimension"><br>
+              <label for="Ag">Area of concrete for chosen dimensions, A<sub>g</sub> (in<sup>2</sup>): </label>
+              <input type="number" id="Ag" step="0.01"><br>
+              <button onclick="continueCalculation()">Continue Calculation</button>
+              <div id="customOutput1" style="margin-top: 15px; font-weight: bold;"><br></div>
+`;
+              document.getElementById('output').innerHTML += output;
+            }
+        
+        
+        function continueCalculation() {
+            let output = '';
+            
+            // Save current input values before updating the output HTML
+            const savedDimension = document.getElementById('dimension')?.value || '';
+            const savedAg = document.getElementById('Ag')?.value || '';
+            
+            const fc = parseFloat(document.getElementById('fc').value);
+            const fy = parseFloat(document.getElementById('fy').value);
+            const Pu = getPuValue();
+            const Ag = parseFloat(document.getElementById('Ag').value);
+            const dimensionInput = document.getElementById('dimension');
+            let dimension = dimensionInput ? parseFloat(dimensionInput.value) : NaN;
+            const phi = 0.65; //strength reduction factor
+            const alpha = 0.8; //column interaction coefficient
+
+            // Validate inputs
+            if (isNaN(fc) || isNaN(fy) || isNaN(Pu) || isNaN(Ag)) {
+                alert("Please enter all values.");
+            return;
+            }
+            //calculate Astreq
+             let Astreq = ((Pu * 1000) / (phi * alpha) - 0.85 * fc * Ag) / (fy - 0.85 * fc);
+            
+            output += `\nRequired steel area, A<sub>st,req</sub>: ${Astreq.toFixed(2)} in²<br><br>`;
+            output += `Bar Options:<br>`;
+
+            //Filter bar table
+            const sortedTable = barTable.sort((a, b) => a.area - b.area);
+
+              let less = [];
+              let equal = [];
+              let greater = [];
+
+              sortedTable.forEach(row => {
+                if (row.area < Astreq) less.push(row);
+                else if (row.area === Astreq) equal.push(row);
+                else greater.push(row);
+              });
+
+              // Take all equal, first 4 from greater
+              const selectedRows = equal.concat(greater.slice(0, 4));
+
+              // Build table output
+              output += `<table>
+                          <tr>
+                            <th>Number of Bars</th>
+                            <th>Bar Number (#)</th>
+                            <th>Area (in²)</th>
+                            <th>Bar Diameter</th>
+                          </tr>`;
+              selectedRows.forEach(row => {
+                output += `<tr>
+                            <td>${row.barQuant}</td>
+                            <td>${row.barSelection}</td>
+                            <td>${row.area}</td>
+                            <td>${row.barDia}</td>
+                          </tr>`;
+                 });
+              output += `</table>`;
+
+            output += `The four corner bars must be the same size. When using 6 or 8 bars, the additonal bars can be a secondary size.<br>`;
+            output += `Use <a href="https://obracewell.github.io/RCBeamCalculator-Tables/" target="_blank" class="styled-link">Table 3</a> to make a different combination on your own.<br>`;
+            output += `This program can only continue with tie design for design with all bars the same size.<br>`;
+
+            output += `
+              <p style="margin-top: 20px;">Choose an option and Continue Design</p>
+              <label for="Ast">Area of steel for chosen bar selection, A<sub>st</sub> (in<sup>2</sup>): </label>
+              <input type="number" id="Ast" step="0.01"><br>
+              <label for="barQ">Number of Bars: </label>
+              <input type="number" id="barQ"><br>
+              <label for="barSel">Bar Number (#): </label>
+              <input type="number" id="barSel"><br>
+              <label for="barD">Bar Diameter (in): </label>
+              <input type="number" id="barD"><br>
+              <button onclick="tieDesignCalc()">Continue Calculation</button>
+              <div id="customOutput2" style="margin-top: 15px; font-weight: bold;"><br></div>
+            `;
+
+            const savedAst = document.getElementById('Ast')?.value || '';
+            const savedBarQ = document.getElementById('barQ')?.value || '';
+            const savedBarSel = document.getElementById('barSel')?.value || '';
+            const savedBarD = document.getElementById('barD')?.value || '';
+            
+            document.getElementById('output').innerHTML += output;
+
+            document.getElementById('dimension').value = savedDimension;
+            document.getElementById('Ag').value = savedAg;
+            document.getElementById('Ast').value = savedAst;
+            document.getElementById('barQ').value = savedBarQ;
+            document.getElementById('barSel').value = savedBarSel;
+            document.getElementById('barD').value = savedBarD;
+            }
+
+    function tieDesignCalc() {
+        let output='';
+
+        const savedAg = document.getElementById('Ag')?.value || '';
+        const savedDimension = document.getElementById('dimension')?.value || '';
+        const savedAst = document.getElementById('Ast')?.value || '';
+        const savedBarQ = document.getElementById('barQ')?.value || '';
+        const savedBarSel = document.getElementById('barSel')?.value || '';
+        const savedBarD = document.getElementById('barD')?.value || '';
+        
+        let barSel = parseFloat(document.getElementById('barSel').value);
+        let barQ = parseFloat(document.getElementById('barQ').value);
+        let barD = parseFloat(document.getElementById('barD').value);
+        const dimension = parseFloat(document.getElementById('dimension').value);
+
+        //assign bar tie diameter (#3 or #4 ties)
+        let barTD;
+        let barTSel;
+        if (barSel <= 10) {
+            barTD = 0.375;
+            barTSel = 3;
+        } else if (barSel > 10) {
+            barTD = 0.5;
+            barTSel = 4;
+        }
+
+        //determine spacing
+        let spacing1 = 48 * barTD;
+        let spacing2 = 16 * barD;
+        let spacing3 = parseFloat(document.getElementById('dimension').value);
+
+        let S = Math.min(spacing1, spacing2, spacing3);
+
+        output += `Using a Tie Confinement System<br>`;
+        output += `Tie Spacing is every ${S.toFixed(0)} inches<br><br>`;
+
+        // --- Display image based on number of bars ---
+        let imageURL = "";
+        if (barQ === 4) {
+            imageURL = "https://example.com/4bars.png";
+        } else if (barQ === 6) {
+            imageURL = "https://example.com/6bars.png";
+        } else if (barQ === 8) {
+            imageURL = "https://example.com/8bars.png";
+        }
+
+    if (imageURL !== "") {
+        output += `<img src="${imageURL}" alt="${barQ} bars tie diagram" class="centered-img" style="width: 280px; margin-top: 10px;"><br>`;
+    } else {
+        output += `<span class="error">No image available for ${barQ} bars.</span><br>`;
+    }
+
+        output = `<div style="margin-top: 15px;">${output}</div>`;
+        document.getElementById('output').innerHTML += output;
+
+        document.getElementById('Ag').value = savedAg;
+        document.getElementById('dimension').value = savedDimension;
+        document.getElementById('Ast').value = savedAst;
+        document.getElementById('barQ').value = savedBarQ;
+        document.getElementById('barSel').value = savedBarSel;
+        document.getElementById('barD').value = savedBarD;
+    }
+          
+
+    </script>
+<footer class="site-footer">
+    <p>Reinforced Concrete Calculator created by Olivia Bracewell, UF Herbert Wertheim College of Engineering</p>
+</footer>
+</body>
+</html>
