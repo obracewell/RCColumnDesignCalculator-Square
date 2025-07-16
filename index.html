@@ -81,6 +81,13 @@
             margin-right: auto;
             margin-top: 10px;
         }
+        .diagram-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 15px;
+            justify-content: center;
+        }
         .centered {
             text-align: center;
         }
@@ -403,6 +410,11 @@ const barTable = [
     function tieDesignCalc() {
         let output='';
 
+        const phi = 0.65;
+        const alpha = 0.8;
+        const fc = parseFloat(document.getElementById('fc').value);     // psi
+        const fy = parseFloat(document.getElementById('fy').value);     // psi
+        
         const savedAg = document.getElementById('Ag')?.value || '';
         const savedDimension = document.getElementById('dimension')?.value || '';
         const savedAst = document.getElementById('Ast')?.value || '';
@@ -415,6 +427,11 @@ const barTable = [
         let barD = parseFloat(document.getElementById('barD').value);
         const dimension = parseFloat(document.getElementById('dimension').value);
 
+        //determine actual rho
+        const rho = (parseFloat(savedAst) / parseFloast(savedAg)) *100;
+        const phiPn = (phi * alpha * ((0.85 * fc * (savedAg - savedAst)) + (fy * savedAst)))/ 1000;
+
+        
         //assign bar tie diameter (#3 or #4 ties)
         let barTD;
         let barTSel;
@@ -441,8 +458,12 @@ const barTable = [
         const a = x - (2 * 1.5) - (2 * db) - (2 * dbr);  
         const S = Space.toFixed(0);
 
-        output += `Using a Tie Confinement System<br>`;
-        output += `Tie Spacing is every ${Space.toFixed(0)} inches<br><br>`;
+        output += `<strong>Final Design:</strong><br><br>`;
+        output += `
+            <p>Steel Ratio, ρ: ${rho.toFixed(2)}%</p>
+            <p>Axial Capacity, &Phi;P<sub>n</sub>: ${phiPn_kips.toFixed(2)} k</p>
+            `;
+
 
         // --- Display image based on number of bars ---
         let imageURL = "";
@@ -455,22 +476,23 @@ const barTable = [
         }
 
     if (imageURL !== "") {
-        output += `<img src="${imageURL}" alt="${barQ} bars tie diagram" class="imagediagram"><br>`;
+        output += `
+        <div class="diagram-wrapper">
+            <img src="${imageURL}" alt="${barQ} bars tie diagram" class="imagediagram">
+            <ul>
+                <li><strong>x</strong> = ${x} in</li>
+                <li><strong>b</strong> = #${b}</li>
+                <li><strong>t</strong> = #${t}</li>
+                 <li><strong>d<sub>b</sub></strong> = ${db} in</li>
+                <li><strong>d<sub>br</sub></strong> = ${dbr} in</li>
+                <li><strong>a</strong> = ${a.toFixed(2)} in</li>
+                <li><strong>S</strong> = ${Space.toFixed(0)} in</li>
+            </ul>
+        </div>
+        `;
     } else {
         output += `<span class="error">No image available for ${barQ} bars.</span><br>`;
     }
-
-        output += `
-            <ul style="margin-top: 10px;">
-            <li><strong>x</strong> = ${x} in</li>
-            <li><strong>b</strong> = #${b}</li>
-            <li><strong>t</strong> = #${t}</li>
-            <li><strong>d<sub>b</sub></strong> = ${db} in</li>
-            <li><strong>d<sub>br</sub></strong> = ${dbr} in</li>
-            <li><strong>a</strong> = ${a.toFixed(2)} in</li>
-            <li><strong>S</strong> = ${Space.toFixed(0)} in</li>
-        </ul>
-        `;
 
         output = `<div style="margin-top: 15px;">${output}</div>`;
         document.getElementById('output').innerHTML += output;
