@@ -429,6 +429,15 @@ const barTable = [
         const rho = (parseFloat(savedAst) / parseFloat(savedAg)) *100;
         const phiPn = (phi * alpha * ((0.85 * fc * (savedAg - savedAst)) + (fy * savedAst)))/ 1000;
 
+        // Check if rho is outside the acceptable range
+        if (rho < 1 || rho > 8) {
+            output += `<p class="error">The chosen design has a reinforcing ratio, ρ, that is outside of the allowable range (1% to 8%).</p>`;
+            output += `<p class="error">This design has a reinforcing ratio of ${rho.toFixed(2)}%.</p>`;
+            
+        // Display the message and exit early so no further calculation is done
+        document.getElementById('output').innerHTML += `<div style="margin-top: 15px;">${output}</div>`;
+        return;
+        }
         
         //assign bar tie diameter (#3 or #4 ties)
         let barTD;
