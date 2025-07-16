@@ -152,10 +152,10 @@
     <div style="margin-left: 30px;">
         <label for="Pu">Direct input, P<sub>u</sub> (k) = </label>
         <input type="number" id="Pu" oninput="toggleLoadInputs()"><br>
-        <p>OR calculate from live and dead loads, P<sub>u</sub> = 1.2(P<sub>D</sub>) + 1.6(P<sub>L</sub>) </p>
+        <p>or calculate from live and dead loads, P<sub>u</sub> = 1.2(P<sub>D</sub>) + 1.6(P<sub>L</sub>) </p>
         <label for="Pd">Dead Load, P<sub>D</sub> (k) = </label>
         <input type="number" id="Pd" oninput="toggleLoadInputs()"><br>
-        <label for="Pl">Live Load, P<sub>L</sub>= </label>
+        <label for="Pl">Live Load, P<sub>L</sub> (k)= </label>
         <input type="number" id="Pl" oninput="toggleLoadInputs()"><br>
     </div>
 
@@ -294,12 +294,12 @@ const barTable = [
             const AgLarge = sideLarge * sideLarge;
 
             output += `A<sub>g,req</sub> = ${Agreq.toFixed(2)} in<br><br>`;
-            output += `Choose A<sub>g</sub>:<br>`;
-            output += `Round Down: ${sideSmall} in × ${sideSmall} in, A<sub>g</sub> = ${AgSmall} in²<br>`;
-            output += `Round Up: ${sideLarge} in × ${sideLarge} in, A<sub>g</sub> = ${AgLarge} in²<br>`;
+            output += `A<sub>g</sub> Options:<br>`;
+            output += `Round Down: ${sideSmall} in × ${sideSmall} in, A<sub>g</sub> = ${AgSmall} in<sup>2</sup><br>`;
+            output += `Round Up: ${sideLarge} in × ${sideLarge} in, A<sub>g</sub> = ${AgLarge} in<sup>2</sup><br>`;
 
             output += `
-              <p style="margin-top: 20px;">Choose an option and Continue Design</p>
+              <p style="margin-top: 20px;">Choose an Option and Continue Design</p>
               <label for="dimension"> Length/Width of Column (in): </label>
               <input type="number" id="dimension"><br>
               <label for="Ag">Area of concrete for chosen dimensions, A<sub>g</sub> (in<sup>2</sup>): </label>
@@ -335,7 +335,7 @@ const barTable = [
             //calculate Astreq
              let Astreq = ((Pu * 1000) / (phi * alpha) - 0.85 * fc * Ag) / (fy - 0.85 * fc);
             
-            output += `\nRequired steel area, A<sub>st,req</sub>: ${Astreq.toFixed(2)} in²<br><br>`;
+            output += `\nRequired steel area, A<sub>st,req</sub>: ${Astreq.toFixed(2)} in<sup>2</sup><br><br>`;
             output += `Bar Options:<br>`;
 
             //Filter bar table
@@ -359,7 +359,7 @@ const barTable = [
                           <tr>
                             <th>Number of Bars</th>
                             <th>Bar Number (#)</th>
-                            <th>Area (in²)</th>
+                            <th>Area (in<sup>2</sup>)</th>
                             <th>Bar Diameter</th>
                           </tr>`;
               selectedRows.forEach(row => {
@@ -377,7 +377,7 @@ const barTable = [
             output += `This program can only continue with tie design for design with all bars the same size.<br>`;
 
             output += `
-              <p style="margin-top: 20px;">Choose an option and Continue Design</p>
+              <p style="margin-top: 20px;">Choose an Option and Continue Design</p>
               <label for="Ast">Area of steel for chosen bar selection, A<sub>st</sub> (in<sup>2</sup>): </label>
               <input type="number" id="Ast" step="0.01"><br>
               <label for="barQ">Number of Bars: </label>
