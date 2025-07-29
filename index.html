@@ -297,8 +297,9 @@ const barTable = [
               <!-- Hidden inputs still used to store selected values -->
               <input type="hidden" id="dimension">
               <input type="hidden" id="Ag" step="0.01">
+              
+              <div id="customOutput1" style="margin-top: 15px;"><br></div>
               <button onclick="continueCalculation()">Continue Calculation</button>
-              <div id="customOutput1" style="margin-top: 15px; font-weight: bold;"><br></div>
             `;
 
               document.getElementById('output').innerHTML += output;
@@ -398,8 +399,9 @@ const barTable = [
             <input type="hidden" id="barQ">
             <input type="hidden" id="barSel">
             <input type="hidden" id="barD">
+            
+            <div id="customOutput2" style="margin-top: 15px;"><br></div>
             <button onclick="tieDesignCalc()">Continue Calculation</button>
-              <div id="customOutput2" style="margin-top: 15px; font-weight: bold;"><br></div>
             `;
 
             const savedAst = document.getElementById('Ast')?.value || '';
