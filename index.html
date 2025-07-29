@@ -299,14 +299,21 @@ const barTable = [
             output += `Round Up: ${sideLarge} in × ${sideLarge} in, A<sub>g</sub> = ${AgLarge} in<sup>2</sup><br>`;
 
             output += `
-              <p style="margin-top: 20px;">Choose an Option and Continue Design</p>
-              <label for="dimension"> Length/Width of Column (in): </label>
-              <input type="number" id="dimension"><br>
-              <label for="Ag">Area of concrete for chosen dimensions, A<sub>g</sub> (in<sup>2</sup>): </label>
-              <input type="number" id="Ag" step="0.01"><br>
+              <p style="margin-top: 20px;">Choose a size option and continue:</p>
+              <label for="agOptionSelect"><strong>Select Column Size:</strong></label><br>
+              <select id="agOptionSelect" onchange="fillAgSelection()">
+                  <option value="">Choose an option</option>
+                  <option value="${sideSmall},${AgSmall}">${sideSmall} in × ${sideSmall} in → Ag = ${AgSmall} in²</option>
+                  <option value="${sideLarge},${AgLarge}">${sideLarge} in × ${sideLarge} in → Ag = ${AgLarge} in²</option>
+              </select>
+              <br><br>
+              <!-- Hidden inputs still used to store selected values -->
+              <input type="hidden" id="dimension">
+              <input type="hidden" id="Ag" step="0.01">
               <button onclick="continueCalculation()">Continue Calculation</button>
               <div id="customOutput1" style="margin-top: 15px; font-weight: bold;"><br></div>
-`;
+            `;
+
               document.getElementById('output').innerHTML += output;
             }
         
@@ -540,6 +547,30 @@ const barTable = [
         document.getElementById("barSel").value = barSel;
         document.getElementById("Ast").value = area;
         document.getElementById("barD").value = barD;
+
+        const summary = `${barQ} bars - #${barSel} - ${area} in² - ${barD} in`;
+        const outputDiv = document.getElementById("customOutput2");
+        if (outputDiv) {
+            outputDiv.innerHTML = `Selected: <strong>${summary}</strong>`;
+        }
+    }
+
+    function fillAgSelection() {
+        const dropdown = document.getElementById("agOptionSelect");
+        const selected = dropdown.value;
+
+        if (!selected) return;
+
+        const [dimension, Ag] = selected.split(",").map(parseFloat);
+
+        document.getElementById("dimension").value = dimension;
+        document.getElementById("Ag").value = Ag;
+
+        const summary = `${dimension} in × ${dimension} in → Ag = ${Ag} in²`;
+        const outputDiv = document.getElementById("customOutput1");
+        if (outputDiv) {
+            outputDiv.innerHTML = `Selected: <strong>${summary}</strong>`;
+        }
     }
 
 
