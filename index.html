@@ -109,12 +109,38 @@
            padding: 5px 10px;
         text-align: center;
         }
-        .info-centered-img {
-          display: block;
-          margin: 15px auto;
-          max-width: auto;
-          height: 150px;
-          border-radius: 6px;
+        .modal {
+          display: none; 
+          position: fixed;
+          z-index: 999;
+          padding-top: 60px;
+          left: 0; top: 0;
+          width: 100%; height: 100%;
+          overflow: auto;
+          background-color: rgba(0,0,0,0.6); /* Dimmed background */
+        }
+        .modal-content {
+          margin: auto;
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          width: 500px;
+          height: 230px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .modal-img {
+          max-width: 100%;
+          height: auto;
+        }
+        .close-btn {
+          float: right;
+          font-size: 24px;
+          font-weight: bold;
+          cursor: pointer;
         }
     </style>
 </head>
@@ -176,10 +202,9 @@
         <option value="6">6</option>
         <option value="7">7</option>
     </select>
+   
     <br>
-
-    <img src="https://raw.githubusercontent.com/obracewell/RCColumnDesignCalculator-Square/refs/heads/main/assets/resettipimage.png" alt="Refresh if changing inputs" class="info-centered-img">
-
+    <a href="#" onclick="showModal(); return false;" class="info-link">Input Tip!</a>
     <br>
     
     <button onclick="performAgSelect()">Calculate</button>
@@ -573,8 +598,23 @@ const barTable = [
         }
     }
 
+function showModal() {
+  document.getElementById('infoModal').style.display = 'block';
+}
 
+function closeModal() {
+  document.getElementById('infoModal').style.display = 'none';
+}
+        
     </script>
+
+<div id="infoModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <img src="https://raw.githubusercontent.com/obracewell/RCColumnDesignCalculator-Square/refs/heads/main/assets/resettipimage.png" alt="Refresh website if changing inputs" class="modal-img">
+  </div>
+</div>
+    
 <footer class="site-footer">
     <p>Reinforced Concrete Calculator created by Olivia Bracewell, UF Herbert Wertheim College of Engineering</p>
 </footer>
