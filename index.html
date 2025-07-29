@@ -370,23 +370,41 @@ const barTable = [
                             <td>${row.barDia}</td>
                           </tr>`;
                  });
-              output += `</table>`;
+           output += `</table>`;
+            
+            // Populate the bar option dropdown
+            let barSelectHTML = `<option value="">Choose an option</option>`;
+            selectedRows.forEach(row => {
+              const valueString = `${row.barQuant},${row.barSelection},${row.area},${row.barDia}`;
+              barSelectHTML += `<option value="${valueString}">${row.barQuant} bars - #${row.barSelection} - ${row.area} in² - ${row.barDia} in</option>`;
+            });
+
+            // After setting innerHTML of 'output', update the select dropdown
+            setTimeout(() => {
+              const barSelect = document.getElementById("barOptionSelect");
+              if (barSelect) {
+                barSelect.innerHTML = barSelectHTML;
+              }
+            }, 0);
+
 
             output += `The four corner bars must be the same size. When using 6 or 8 bars, the additonal bars can be a secondary size.<br>`;
             output += `Use <a href="https://obracewell.github.io/RCBeamCalculator-Tables/" target="_blank" class="styled-link">Table 3</a> to make a different combination on your own.<br>`;
             output += `This program can only continue with tie design for design with all bars the same size.<br>`;
 
             output += `
-              <p style="margin-top: 20px;">Choose an Option and Continue Design</p>
-              <label for="Ast">Area of steel for chosen bar selection, A<sub>st</sub> (in<sup>2</sup>): </label>
-              <input type="number" id="Ast" step="0.01"><br>
-              <label for="barQ">Number of Bars: </label>
-              <input type="number" id="barQ"><br>
-              <label for="barSel">Bar Number (#): </label>
-              <input type="number" id="barSel"><br>
-              <label for="barD">Bar Diameter (in): </label>
-              <input type="number" id="barD"><br>
-              <button onclick="tieDesignCalc()">Continue Calculation</button>
+            <p style="margin-top: 20px;">Choose a bar option and continue design:</p>
+            <label for="barOptionSelect"><strong>Select a Bar Option:</strong></label><br>
+            <select id="barOptionSelect" onchange="fillBarSelection()">
+                <option value="">Choose an option</option>
+            </select>
+            <br><br>
+            <!-- Hidden inputs still used to store selected values -->
+            <input type="hidden" id="Ast">
+            <input type="hidden" id="barQ">
+            <input type="hidden" id="barSel">
+            <input type="hidden" id="barD">
+            <button onclick="tieDesignCalc()">Continue Calculation</button>
               <div id="customOutput2" style="margin-top: 15px; font-weight: bold;"><br></div>
             `;
 
@@ -509,7 +527,21 @@ const barTable = [
         document.getElementById('barSel').value = savedBarSel;
         document.getElementById('barD').value = savedBarD;
     }
-          
+
+    function fillBarSelection() {
+        const dropdown = document.getElementById("barOptionSelect");
+        const selected = dropdown.value;
+
+        if (!selected) return;
+
+        const [barQ, barSel, area, barD] = selected.split(",").map(parseFloat);
+
+        document.getElementById("barQ").value = barQ;
+        document.getElementById("barSel").value = barSel;
+        document.getElementById("Ast").value = area;
+        document.getElementById("barD").value = barD;
+    }
+
 
     </script>
 <footer class="site-footer">
