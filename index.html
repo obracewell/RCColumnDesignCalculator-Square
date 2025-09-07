@@ -324,7 +324,7 @@ const barTable = [
 
             let output = `<p class="success">Design:</p><br><br>`;
             
-            //Calculate Agreq
+            //Calculate Ag,target
             const Agreq = (Pu*1000) / (phi*alpha*(0.85*fc*(1-rhoi) + fy*rhoi));
                         
             //Calculate and show Ag options
@@ -335,7 +335,7 @@ const barTable = [
             const AgSmall = sideSmall * sideSmall;
             const AgLarge = sideLarge * sideLarge;
 
-            output += `A<sub>g,req</sub> = ${Agreq.toFixed(2)} in<br><br>`;
+            output += `A<sub>g,target</sub> = ${Agreq.toFixed(2)} in<br><br>`;
             output += `A<sub>g</sub> Options:<br>`;
             output += `Round Down: ${sideSmall} in × ${sideSmall} in, A<sub>g</sub> = ${AgSmall} in<sup>2</sup><br>`;
             output += `Round Up: ${sideLarge} in × ${sideLarge} in, A<sub>g</sub> = ${AgLarge} in<sup>2</sup><br>`;
